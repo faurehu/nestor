@@ -8,7 +8,8 @@ def create_app(testing=False):
 
     app.config.update(
         TESTING=testing,
-        SQLALCHEMY_DATABASE_URI=DATABASE_URI
+        SQLALCHEMY_DATABASE_URI=DATABASE_URI,
+        SQLALCHEMY_TRACK_MODIFICATIONS=True
     )
 
     app.register_blueprint(routes)

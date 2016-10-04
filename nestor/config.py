@@ -11,4 +11,4 @@ DATABASE_URI = 'postgresql://{}:{}@{}:{}/{}'.format(POSTGRES_USER,
                                                     POSTGRES_PASSWORD,
                                                     POSTGRES_HOSTNAME,
                                                     POSTGRES_PORT,
-                                                    FLASK_ENVIRONMENT)
+                                                    ENVIRONMENT)
