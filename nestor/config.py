@@ -1,5 +1,6 @@
 import os
 
+PORT = os.getenv('PORT', 5000)
 ENVIRONMENT = os.getenv('FLASK_ENVIRONMENT', 'dev')
 
 POSTGRES_USER = os.getenv('POSTGRES_USER', 'admin')
