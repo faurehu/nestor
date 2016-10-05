@@ -1,23 +1,25 @@
 from nestor.db import db
 
-class Story(db.Model):
+class Audio(db.Model):
 
-    __tablename__ = 'story'
+    __tablename__ = 'audio'
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(140), nullable=False)
+    type = db.Column(db.String(10), nullable=False)
     author = db.Column(db.String(140), nullable=False)
     description = db.Column(db.String(500), nullable=False)
-    text_uri = db.Column(db.String(1000), nullable=False)
+    link_uri = db.Column(db.String(1000), nullable=False)
     audio_uri = db.Column(db.String(1000), nullable=False)
 
-    def __init__(self, id, title, author, description, text_uri, audio_uri):
+    def __init__(self, id, title, type, author, description, link_uri, audio_uri):
         self.id = id
         self.title = title
+        self.type = type
         self.author = author
         self.description = description
-        self.text_uri = text_uri
+        self.link_uri = link_uri
         self.audio_uri = audio_uri
 
     def __repr__(self):
-        return '<title {}>'.format(self.title)
+        return '< title {} - type {} >'.format(self.title, self.type)

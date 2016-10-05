@@ -1,23 +1,23 @@
-from nestor.models.story import Story
+from nestor.models.audio import Audio
 from nestor.db import db
 from nestor import create_app
 
-class TestStory():
+class TestAudio():
 
     def setUp(self):
         self.app = create_app(testing=True)
 
     def tearDown(self):
         with self.app.app_context():
-            db.session.query(Story).delete()
+            db.session.query(Audio).delete()
             db.session.commit()
 
     def test_is_saved(self):
-        story = Story(1, 'title', 'author', 'description', 'text', 'audio')
+        audio = Audio(1, 'title', 'type', 'author', 'description', 'link', 'audio')
 
         with self.app.app_context():
-            db.session.add(story)
+            db.session.add(audio)
             db.session.commit()
-            saved = Story.query.filter_by(title='title').first()
+            saved = Audio.query.filter_by(title='title').first()
 
-        assert(saved == story)
+        assert(saved == audio)

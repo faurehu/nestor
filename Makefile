@@ -1,3 +1,6 @@
+dev:
+	@sh dev.sh
+
 run:
 	@sh run.sh
 
