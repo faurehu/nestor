@@ -22,6 +22,7 @@ class TestAction():
         db.session.commit()
 
     def tearDown(self):
+        db.session.rollback()
         db.session.query(Action).delete()
         db.session.query(Audio).delete()
         db.session.commit()
@@ -59,8 +60,6 @@ class TestAction():
         with assert_raises(IntegrityError):
             db.session.commit()
 
-        db.session.rollback()
-
     def test_audio_is_deleted(self):
         action = Action(0, 0, 0, 'link', 0, datetime.utcnow())
         db.session.add(action)
@@ -71,5 +70,3 @@ class TestAction():
 
         with assert_raises(IntegrityError):
             db.session.commit()
-
-        db.session.rollback()

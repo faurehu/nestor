@@ -15,6 +15,7 @@ class TestAudio():
         self.app = create_app(testing=True)
 
     def tearDown(self):
+        db.session.rollback()
         db.session.query(Audio).delete()
         db.session.commit()
 
@@ -29,10 +30,20 @@ class TestAudio():
     def test_all_strings_have_info(self):
         with assert_raises(InvalidAttribute):
             audio = Audio(0, '', 'story', 'author', 'description', VALID_LINK, VALID_LINK)
+
+        with assert_raises(InvalidAttribute):
             audio = Audio(0, 'title', '', 'author', 'description', VALID_LINK, VALID_LINK)
+
+        with assert_raises(InvalidAttribute):
             audio = Audio(0, 'title', 'story', '', 'description', VALID_LINK, VALID_LINK)
+
+        with assert_raises(InvalidAttribute):
             audio = Audio(0, 'title', 'story', 'author', '', VALID_LINK, VALID_LINK)
+
+        with assert_raises(InvalidAttribute):
             audio = Audio(0, 'title', 'story', 'author', 'description', '', VALID_LINK)
+
+        with assert_raises(InvalidAttribute):
             audio = Audio(0, 'title', 'story', 'author', 'description', 'link', '')
 
     def test_audio_is_story_or_ad(self):
@@ -43,15 +54,16 @@ class TestAudio():
         with assert_raises(InvalidAttribute):
             # Check it has a schema
             audio = Audio(0, 'title', 'story', 'author', 'description', 'google.com', 'audio')
-            audio = Audio(0, 'title', 'story', 'author', 'description', 'link', 'google.com')
+
+        with assert_raises(InvalidAttribute):
+            audio = Audio(0, 'title', 'story', 'author', 'description', VALID_LINK, 'google.com')
 
             # Check it has domain
-            audio = Audio(0, 'title', 'story', 'author', 'description', 'http://google', 'audio')
-            audio = Audio(0, 'title', 'story', 'author', 'description', 'http://google', 'audio')
+        with assert_raises(InvalidAttribute):
+            audio = Audio(0, 'title', 'story', 'author', 'description', 'http://google', VALID_LINK)
 
-            # Check it returns 200
-            audio = Audio(0, 'title', 'story', 'author', 'description', 'http://google.com/404', 'audio')
-            audio = Audio(0, 'title', 'story', 'author', 'description', 'link', 'http://google.com/404')
+        with assert_raises(InvalidAttribute):
+            audio = Audio(0, 'title', 'story', 'author', 'description', 'http://google', VALID_LINK)
 
     def test_audio_id_is_unique(self):
         audio = Audio(0, 'title', 'story', 'author', 'description', VALID_LINK, VALID_LINK)
@@ -62,7 +74,6 @@ class TestAudio():
 
         with assert_raises(IntegrityError):
             db.session.commit()
-        db.session.rollback()
 
     def test_strings_not_too_long(self):
        title = Audio(0, '*' * 141, 'story', 'author', 'description', VALID_LINK, VALID_LINK)
@@ -93,4 +104,3 @@ class TestAudio():
        db.session.add(audio_uri)
        with assert_raises(DataError):
            db.session.commit()
-       db.session.rollback()

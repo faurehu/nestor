@@ -17,16 +17,18 @@ depends_on = None
 
 def upgrade():
     op.create_table('context',
-        sa.Column('type', sa.String(10), primary_key=True),
-        sa.Column('audio_id', sa.Integer, sa.ForeignKey('audio.id'), primary_key=True),
-        sa.Column('time_start', sa.Integer, sa.CheckConstraint('time_start > 0'), primary_key=True),
+        sa.Column('type', sa.String(10)),
+        sa.Column('audio_id', sa.Integer, sa.ForeignKey('audio.id', ondelete='CASCADE')),
+        sa.Column('time_start', sa.Integer, sa.CheckConstraint('time_start > -1')),
         sa.Column('time_end', sa.Integer, nullable=False),
         sa.Column('link_uri', sa.String(1000)),
         sa.Column('img_uri', sa.String(1000)),
         sa.Column('text', sa.String(140)),
         sa.CheckConstraint('time_end > time_start')
     )
-
+    op.create_primary_key('pk_context', 'context',
+                          ['type', 'audio_id', 'time_start']
+    )
 
 def downgrade():
     pass
