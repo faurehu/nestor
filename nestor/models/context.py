@@ -63,3 +63,9 @@ class Context(db.Model):
                 raise MissingAttribute('text is missing')
             if len(self.text) > 140:
                 raise InvalidAttribute('text is too long')
+
+        contexts = Context.query.filter_by(type=self.type, audio_id=self.audio_id).all()
+
+        for context in contexts:
+            if max(context.time_start, self.time_start) <= min(context.time_end, self.time_end):
+                raise InvalidAttribute('this context overlaps with another one')

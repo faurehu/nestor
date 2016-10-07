@@ -138,3 +138,14 @@ class TestContext():
 
         audio = Audio.query.filter_by(title='title').first()
         assert(context in audio.contexts)
+
+    def test_no_same_type_and_audio_share_time(self):
+        context = Context('quote', 0, 10, 20, text=VALID_TEXT)
+        db.session.add(context)
+        db.session.commit()
+
+        with assert_raises(InvalidAttribute):
+            overlap = Context('quote', 0, 9, 11, text=VALID_TEXT)
+
+        with assert_raises(InvalidAttribute):
+            overlap = Context('quote', 0, 19, 21, text=VALID_TEXT)
