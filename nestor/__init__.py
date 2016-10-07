@@ -15,5 +15,6 @@ def create_app(testing=False):
     app.register_blueprint(routes)
 
     db.init_app(app)
+    app.app_context().push()
 
     return app
