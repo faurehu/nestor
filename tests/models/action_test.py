@@ -70,3 +70,7 @@ class TestAction():
 
         with assert_raises(IntegrityError):
             db.session.commit()
+
+    def test_no_id_is_created(self):
+        action = Action(None, 0, 0, 'link', 0, datetime.utcnow())
+        assert(action.id)

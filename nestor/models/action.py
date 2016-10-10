@@ -1,6 +1,8 @@
 from nestor.errors import InvalidAttribute
 from nestor.db import db
 
+from sqlalchemy import func
+
 ACTION_TYPES = ['start', 'finished', 'queued', 'shared', 'context', 'link']
 
 class Action(db.Model):
@@ -15,6 +17,9 @@ class Action(db.Model):
     timestamp = db.Column('timestamp', db.Date, nullable=False)
 
     def __init__(self, id, client_id, audio_id, type, audio_point, timestamp):
+        if id is None:
+            id = Action.get_new_id()
+
         self.id = id
         self.client_id = client_id
         self.audio_id = audio_id
@@ -30,3 +35,14 @@ class Action(db.Model):
 
         if getattr(self, 'type', '') not in ACTION_TYPES:
             raise InvalidAttribute('type is not valid')
+
+    @staticmethod
+    def get_new_id():
+        # TODO: Potential race condition
+        query = db.session.query(func.max(Action.id).label('max_id')).one()
+        max_id = query.max_id
+
+        if max_id is None:
+            max_id = 0
+
+        return max_id + 1

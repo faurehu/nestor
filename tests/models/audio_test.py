@@ -139,4 +139,4 @@ class TestAudio():
 
     def test_no_id_is_created(self):
         audio = Audio(None, 'title', 'story', 'author', 'description', VALID_LINK, VALID_LINK)
-        assert(audio.id is not None)
+        assert(audio.id)

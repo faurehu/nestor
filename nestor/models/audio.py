@@ -81,9 +81,8 @@ class Audio(db.Model):
     @staticmethod
     def get_new_id():
         # TODO: Potential race condition
-        query = db.session.query(func.max(Audio.id).label('max_id'))
-        res = query.one()
-        max_id = res.max_id
+        query = db.session.query(func.max(Audio.id).label('max_id')).one()
+        max_id = query.max_id
 
         if max_id is None:
             max_id = 0
