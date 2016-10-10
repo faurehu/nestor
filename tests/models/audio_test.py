@@ -1,6 +1,7 @@
 from nose.tools import assert_raises
 
 from nestor.models.audio import Audio
+from nestor.models.context import Context
 from nestor.db import db
 from nestor import create_app
 
@@ -8,11 +9,22 @@ from nestor.errors import InvalidAttribute
 from sqlalchemy.exc import IntegrityError, DataError
 
 VALID_LINK = 'http://google.com'
+VALID_TEXT = 'valid text'
 
 class TestAudio():
 
     def setUp(self):
         self.app = create_app(testing=True)
+        self.expected_object = {
+            'author': 'author',
+            'type': 'story',
+            'title': 'title',
+            'id': 1,
+            'description': 'description',
+            'link_uri': VALID_LINK,
+            'audio_uri': VALID_LINK,
+            'contexts': []
+        }
 
     def tearDown(self):
         db.session.rollback()
@@ -104,3 +116,23 @@ class TestAudio():
        db.session.add(audio_uri)
        with assert_raises(DataError):
            db.session.commit()
+
+    def test_is_serialized(self):
+        audio = Audio(1, 'title', 'story', 'author', 'description', VALID_LINK, VALID_LINK)
+
+        assert(audio.serialize() == self.expected_object)
+
+    def test_is_serialized_with_context(self):
+        audio = Audio(1, 'title', 'story', 'author', 'description', VALID_LINK, VALID_LINK)
+
+        audio.contexts = [Context('quote', 0, 9, 11, text=VALID_TEXT)]
+
+        self.expected_object['contexts'] = [{
+            'type': 'quote',
+            'time_start': 9,
+            'audio_id': 0,
+            'time_end': 11,
+            'text': VALID_TEXT
+        }]
+
+        assert(audio.serialize() == self.expected_object)

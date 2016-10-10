@@ -149,3 +149,16 @@ class TestContext():
 
         with assert_raises(InvalidAttribute):
             overlap = Context('quote', 0, 19, 21, text=VALID_TEXT)
+
+    def test_is_serialized(self):
+        context = Context('quote', 0, 9, 11, text=VALID_TEXT)
+
+        expected_object = {
+            'type': 'quote',
+            'time_start': 9,
+            'audio_id': 0,
+            'time_end': 11,
+            'text': VALID_TEXT
+        }
+
+        assert(context.serialize() == expected_object)

@@ -64,9 +64,16 @@ class TestRoutes():
 
     @unittest.skip
     def test_post_action(self):
+        action = {
+            'client_id': 0,
+            'audio_id': 0,
+            'type': 'start',
+            'audio_point': 0,
+            'timestamp': date.now(),
+            'token': 'secret_token'
+        }
         pass
 
-    @unittest.skip
     def test_post_audio(self):
         pass
 
