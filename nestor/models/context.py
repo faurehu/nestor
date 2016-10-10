@@ -69,3 +69,23 @@ class Context(db.Model):
         for context in contexts:
             if max(context.time_start, self.time_start) <= min(context.time_end, self.time_end):
                 raise InvalidAttribute('this context overlaps with another one')
+
+    def serialize(self):
+        serialized = {
+            'type': self.type,
+            'audio_id': self.audio_id,
+            'time_start': self.time_start,
+            'time_end': self.time_end
+        }
+
+        if self.type == 'image':
+            serialized['img_uri'] = self.img_uri
+
+        if self.type == 'quote':
+            serialized['text'] = self.text
+
+        if self.type == 'button':
+            serialized['text'] = self.text
+            serialized['link_uri'] = self.link_uri
+
+        return serialized

@@ -43,3 +43,38 @@ class Audio(db.Model):
         for attr in ['title', 'type', 'author', 'description', 'link_uri', 'audio_uri']:
             if len(getattr(self, attr, '')) < 1:
                 raise InvalidAttribute('{} is empty'.format(attr))
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'type': self.type,
+            'author': self.author,
+            'description': self.description,
+            'link_uri': self.link_uri,
+            'audio_uri': self.audio_uri,
+            'contexts': [x.serialize() for x in self.contexts]
+        }
+
+    @staticmethod
+    def get_story(id):
+        audio = Audio.query.filter_by(id=id).first()
+
+        if audio.type != 'story':
+            audio = None
+
+        return audio
+
+    @staticmethod
+    def get_ad():
+        # TODO: implement ad algorithm
+        audio = Audio.query.all().first()
+
+        if audio.type != 'ad':
+            audio = None
+
+        return audio
+
+    @staticmethod
+    def get_stories():
+        return Audio.query.all()
