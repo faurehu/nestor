@@ -1,6 +1,8 @@
 from nestor.db import db
 from nestor.errors import InvalidAttribute
 
+from sqlalchemy import func
+
 from nestor.helpers import is_valid_uri
 
 class Audio(db.Model):
@@ -16,6 +18,9 @@ class Audio(db.Model):
     audio_uri = db.Column(db.String(1000), nullable=False)
 
     def __init__(self, id, title, type, author, description, link_uri, audio_uri):
+        if id is None:
+            id = Audio.get_new_id()
+
         self.id = id
         self.title = title
         self.type = type
@@ -66,15 +71,21 @@ class Audio(db.Model):
         return audio
 
     @staticmethod
-    def get_ad():
-        # TODO: implement ad algorithm
-        audio = Audio.query.all().first()
-
-        if audio.type != 'ad':
-            audio = None
-
-        return audio
-
-    @staticmethod
     def get_stories():
         return Audio.query.all()
+
+    @staticmethod
+    def get_ad():
+        pass
+
+    @staticmethod
+    def get_new_id():
+        # TODO: Potential race condition
+        query = db.session.query(func.max(Audio.id).label('max_id'))
+        res = query.one()
+        max_id = res.max_id
+
+        if max_id is None:
+            max_id = 0
+
+        return max_id + 1

@@ -136,3 +136,7 @@ class TestAudio():
         }]
 
         assert(audio.serialize() == self.expected_object)
+
+    def test_no_id_is_created(self):
+        audio = Audio(None, 'title', 'story', 'author', 'description', VALID_LINK, VALID_LINK)
+        assert(audio.id is not None)
