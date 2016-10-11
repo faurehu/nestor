@@ -13,3 +13,5 @@ DATABASE_URI = 'postgresql://{}:{}@{}:{}/{}'.format(POSTGRES_USER,
                                                     POSTGRES_HOSTNAME,
                                                     POSTGRES_PORT,
                                                     ENVIRONMENT)
+
+SECRET_TOKEN = os.getenv('SECRET_TOKEN', 'secret_token')

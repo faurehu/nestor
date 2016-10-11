@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from nestor.models.audio import Audio
+from nestor.config import SECRET_TOKEN
 import json
 
 from werkzeug.exceptions import BadRequest
@@ -84,6 +85,9 @@ def audio():
 
         if not payload:
             raise Exception('payload is an empty list')
+
+        if payload[0].get('token', '') != SECRET_TOKEN:
+            raise Exception('token is invalid')
 
         response['audio_id'] = []
 

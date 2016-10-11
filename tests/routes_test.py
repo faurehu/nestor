@@ -28,6 +28,15 @@ class TestRoutes():
         }]
     }
 
+    audio_form = {
+        'title': 'title',
+        'type': 'story',
+        'author': 'author',
+        'description': 'description',
+        'audio_uri': VALID_LINK,
+        'link_uri': VALID_LINK,
+    }
+
     def setUp(self):
         app = create_app(testing=True)
         self.app = app.test_client()
@@ -82,14 +91,8 @@ class TestRoutes():
         pass
 
     def test_post_audio(self):
-        audio_form = {
-            'title': 'title',
-            'type': 'story',
-            'author': 'author',
-            'description': 'description',
-            'audio_uri': VALID_LINK,
-            'link_uri': VALID_LINK
-        }
+        audio_form = dict(self.audio_form)
+        audio_form['token'] = 'secret_token'
 
         r = self.app.post('/audio',
                           content_type='application/json',
@@ -102,6 +105,9 @@ class TestRoutes():
     def test_post_action_without_credentials(self):
         pass
 
-    @unittest.skip
     def test_post_audio_without_token(self):
-        pass
+        r = self.app.post('/audio',
+                          content_type='application/json',
+                          data=json.dumps(self.audio_form))
+        json_response = json.loads(r.get_data(as_text=True))
+        assert(not json_response['ok'])
