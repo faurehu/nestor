@@ -70,12 +70,33 @@ class TestRoutes():
             'type': 'start',
             'audio_point': 0,
             'timestamp': date.now(),
-            'token': 'secret_token'
         }
         pass
 
-    def test_post_audio(self):
+    @unittest.skip
+    def test_post_action_with_wrong_client_id(self):
         pass
+
+    @unittest.skip
+    def test_post_action_audio_dont_exist(self):
+        pass
+
+    def test_post_audio(self):
+        audio_form = {
+            'title': 'title',
+            'type': 'story',
+            'author': 'author',
+            'description': 'description',
+            'audio_uri': VALID_LINK,
+            'link_uri': VALID_LINK
+        }
+
+        r = self.app.post('/audio',
+                          content_type='application/json',
+                          data=json.dumps(audio_form))
+        json_response = json.loads(r.get_data(as_text=True))
+        assert(json_response['ok'])
+        assert(json_response['audio_id'])
 
     @unittest.skip
     def test_post_action_without_credentials(self):
