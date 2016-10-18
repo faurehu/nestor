@@ -1,5 +1,6 @@
 from nestor.models.audio import Audio
 from nestor.models.context import Context
+from nestor.models.action import Action
 from nestor import create_app
 from nestor.db import db
 
@@ -47,6 +48,7 @@ class TestRoutes():
 
     def tearDown(self):
         db.session.query(Context).delete()
+        db.session.query(Action).delete()
         db.session.query(Audio).delete()
         db.session.commit()
 
@@ -55,6 +57,7 @@ class TestRoutes():
         payload = json.loads(r.get_data(as_text=True))
         assert(payload['ping'])
 
+    @unittest.skip
     def test_get_story(self):
         r = self.app.get('/story/0?json=true')
         json_response = json.loads(r.get_data(as_text=True))
@@ -71,16 +74,32 @@ class TestRoutes():
         stories = json_response['data']['stories']
         assert(stories == [self.expected_story])
 
-    @unittest.skip
     def test_post_action(self):
-        action = {
-            'client_id': 0,
+        action_form = {
+            'token': 'secret_token',
             'audio_id': 0,
             'type': 'start',
             'audio_point': 0,
-            'timestamp': date.now(),
         }
-        pass
+        r = self.app.post('/action',
+                          content_type='application/json',
+                          data=json.dumps(action_form))
+        json_response = json.loads(r.get_data(as_text=True))
+        assert(json_response['ok'])
+
+        action = Action.query.filter_by(id=json_response['action_id']).first()
+        assert(action)
+
+    def test_cookie_is_set(self):
+        r = self.app.get('/stories?json=true')
+        cookie = r.headers.get('Set-Cookie')
+        assert('nestor_token=' in cookie)
+
+    def test_cookie_stays(self):
+        self.app.set_cookie('localhost', 'nestor_token', '1234567890')
+        r = self.app.get('/stories?json=true')
+        cookie = r.headers.get('Set-Cookie')
+        assert('nestor_token=1234567890' in cookie)
 
     @unittest.skip
     def test_post_action_with_wrong_client_id(self):
@@ -99,10 +118,12 @@ class TestRoutes():
                           data=json.dumps(audio_form))
         json_response = json.loads(r.get_data(as_text=True))
         assert(json_response['ok'])
-        assert(json_response['audio_id'])
+
+        audio = Audio.query.filter_by(id=json_response['audio_id']).first()
+        assert(audio)
 
     @unittest.skip
-    def test_post_action_without_credentials(self):
+    def test_post_audio_with_invalid_attribute(self):
         pass
 
     def test_post_audio_without_token(self):
@@ -111,3 +132,19 @@ class TestRoutes():
                           data=json.dumps(self.audio_form))
         json_response = json.loads(r.get_data(as_text=True))
         assert(not json_response['ok'])
+
+    def test_post_context(self):
+        context_form = {
+            'type': 'quote',
+            'audio_id': 0,
+            'time_start': 20,
+            'time_end': 30,
+            'text': VALID_TEXT,
+            'token': 'secret_token'
+        }
+
+        r = self.app.post('/context',
+                          content_type='application/json',
+                          data=json.dumps(context_form))
+        json_response = json.loads(r.get_data(as_text=True))
+        assert(json_response['ok'])

@@ -18,6 +18,7 @@ class Audio(db.Model):
     audio_uri = db.Column(db.String(1000), nullable=False)
 
     def __init__(self, id, title, type, author, description, link_uri, audio_uri):
+        # TODO: fix clashing ids
         if id is None:
             id = Audio.get_new_id()
 

@@ -1,5 +1,6 @@
+import random
+import string
 import re
-
 
 def is_valid_uri(URL):
     """
@@ -13,3 +14,7 @@ def is_valid_uri(URL):
             r'(?::\d+)?'  # optional port
             r'(?:/?|[/?]\S+)$', re.IGNORECASE)
     return URL is not None and regex.search(URL)
+
+def generate_token(length):
+    return ''.join(random.choice(string.ascii_uppercase + string.digits)
+                                 for _ in range(length))
